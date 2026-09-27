@@ -1,3 +1,4 @@
+// Tags: LifoMax
 class MinStack {
 // Begin add
 private:

@@ -7,7 +7,14 @@ knowledge, with main focus on algorithms and c++ language.
 Under construction.
 
 ## Algorithms
-Implementation of some algorithms in c++. Usually as general as possible. Solutions are self made, no AI - thus code documentation might be partial. Of course AI *was* used for learning.
+Implementation of some algorithms in c++ 17. Usually as general as possible. Solutions are self made, no AI - thus code documentation might be partial. Of course AI *was* used for learning.
+
+Algorithms and example problems:
+-- Dynamic programming: 3578
+-- Fifo Max: 3578, 239
+-- Lifo Max: 155
+
+<!-- In c++ 20 we could use `require` and `concept` for easier definition of templates. -->
 
 ## leetcode
 `leetcode` contains solutions to some tasks from [leetcode] problems dataset. Each solution present has passed the leetcode tests. `leetcode/testing_environment` contains example of testing custom Trie.

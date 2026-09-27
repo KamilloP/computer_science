@@ -1,22 +1,11 @@
 #include <bits/stdc++.h>
-// #include <stdexcept>
+// #include <stdexcept> // Not included because in bits/stdc++.h
+#include "utility_test/utility_test.h"
 #include "../fifo_max/fifo_max.h"
 
 // g++ -std=c++17 -Wall -Wextra -pedantic test_fifo_max.cpp -o bin/test_fifo_max
 
 using namespace std;
-
-template<typename T>
-void printVector(const vector<T>& v) {
-    cout << "[";
-    for (int i=0; i+1<int(v.size()); i++) {
-        cout << v[i] << ", ";
-    }
-    if (v.size() > 0) {
-        cout << v[v.size()-1]; 
-    }
-    cout << "]\n";
-}
 
 template<typename T, typename Comp = less<T>>
 vector<T> slidingWindow(const vector<T>& arr, int k, Comp comp = Comp{}) {
@@ -32,20 +21,6 @@ vector<T> slidingWindow(const vector<T>& arr, int k, Comp comp = Comp{}) {
         result.push_back(fm.max());
     }
     return result;
-}
-
-template<typename T>
-void test(const vector<T>& result, const vector<T>& expected, const string& testName) {
-    if (expected == result) {
-        cout << "Test " << testName << " passed\n";
-    }
-    else {
-        cout << "Test " << testName << " failed:\nresult=";
-        printVector(result);
-        cout << "expected=";
-        printVector(expected);
-        throw logic_error( "expected != result" );
-    }
 }
 
 void testSlidingWindow(const vector<int>& arr, int k, const vector<int>& expected, const string& testName) {
