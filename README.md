@@ -10,9 +10,12 @@ Under construction.
 Implementation of some algorithms in c++ 17. Usually as general as possible. Solutions are self made, no AI - thus code documentation might be partial. Of course AI *was* used for learning.
 
 Algorithms and example problems:
-- Dynamic programming: 3578
+- Dynamic programming: 3578, 44
 - Fifo Max: 3578, 239
 - Lifo Max: 155
+- Backtracking: 39, 40
+- DFS: 827 (connected components)
+
 
 <!-- In c++ 20 we could use `require` and `concept` for easier definition of templates. -->
 
@@ -22,7 +25,7 @@ Algorithms and example problems:
 [leetcode]: https://leetcode.com/problemset/
 
 ## Current TODO
-lca, RMQ, segment tree, suffix tree, lcp, copy implementation of kmp, Trie, LPS from solutions and generalize.
+lca, segment tree, suffix tree, lcp, copy implementation of kmp, Trie, LPS from solutions and generalize.
 
 ## Remarks
 Executables are hidden in folders `bin`, check `.gitignore`.
