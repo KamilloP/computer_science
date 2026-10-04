@@ -3,9 +3,26 @@
 #include "utility_test/utility_test.h"
 #include "../lifo_max/lifo_max.h"
 
-// g++ -std=c++17 -Wall -Wextra -pedantic test_fifo_max.cpp -o bin/test_fifo_max
+// g++ -std=c++17 -Wall -Wextra -pedantic test_lifo_max.cpp -o bin/test_lifo_max
 
 using namespace std;
+
+template<typename T, typename F = decltype(readVector<T>)>
+tuple<vector<T>, vector<string>, vector<T>> readData(const string& testName, int n, F funcReadVector = readVector<T>) {
+    ifstream input_file("dataset/lifo_max/" + testName + "/" + to_string(n) + ".in");
+    ifstream expected_file("dataset/lifo_max/" + testName + "/" + to_string(n) + ".out");
+
+    if (!input_file) {
+        throw invalid_argument("No such file as `dataset/lifo_max/" + testName + "/" + to_string(n) + ".in`");
+    }
+    if (!expected_file) {
+        throw invalid_argument("No such file as `dataset/lifo_max/" + testName + "/" + to_string(n) + ".out`");
+    }
+    auto arr = funcReadVector(input_file);
+    auto operations = readVector<string>(input_file);
+    auto expected = funcReadVector(expected_file);
+    return tuple(arr, operations, expected);
+}
 
 template<typename T, typename Comp = less<T>>
 vector<T> operationsSequence(const vector<T>& elements, const vector<string> operations, Comp comp = Comp{}) {
@@ -27,34 +44,53 @@ vector<T> operationsSequence(const vector<T>& elements, const vector<string> ope
     return result;
 }
 
-void testLifo(const vector<int>& elements, const vector<string> operations, const vector<int>& expected, const string& testName) {
+void testLifo(const vector<int>& elements, const vector<string> operations, const vector<int>& expected, const string& testName, bool silentPass) {
     vector<int> result = operationsSequence(elements, operations);
-    test(result, expected, testName);
+    test(result, expected, testName, silentPass);
 }
 
-void testLifoMin(const vector<int>& elements, const vector<string> operations, const vector<int>& expected, const string& testName) {
+void testLifoMin(const vector<int>& elements, const vector<string> operations, const vector<int>& expected, const string& testName, bool silentPass) {
     struct MyComparator {
         bool operator()(int a, int b) {
             return a > b;
         }
     };
     vector<int> result = operationsSequence(elements, operations, MyComparator{});
-    test(result, expected, testName);
+    test(result, expected, testName, silentPass);
 }
 
-void testLifoMinString(const vector<string>& elements, const vector<string> operations, const vector<string>& expected, const string& testName) {
+void testLifoMinString(const vector<string>& elements, const vector<string> operations, const vector<string>& expected, const string& testName, bool silentPass) {
     struct MyComparator {
         bool operator()(string a, string b) {
             return a > b;
         }
     };
     vector<string> result = operationsSequence(elements, operations, MyComparator{});;
-    test(result, expected, testName);
+    test(result, expected, testName, silentPass);
 }
 
-int main () {
-    testLifo({2,0,3,-1,-1,-1,-1}, {"push","push","push","max","pop","top","max"}, {3, 0, 2}, "MAX_INT");
-    testLifoMin({-2,0,-3,-1,-1,-1,-1}, {"push","push","push","max","pop","top","max"}, {-3, 0, -2}, "MIN_INT");
-    testLifoMinString({"ab","b","aa","","","",""}, {"push","push","push","max","pop","top","max"}, {"aa", "b", "ab"}, "MAX_INT");
+int main (int argc, char* argv[]) {
+    auto [testName, n, silentPass] = analyzeMainArguments(argc, argv);
+    vector<string> possibleTests {"MAX_INT", "MIN_INT", "MIN_STRING"};
+    if (find(possibleTests.begin(), possibleTests.end(), testName) == possibleTests.end()) {
+        throw invalid_argument("Test name (" + testName +") is not supported");
+    }
+
+    if (testName == "MAX_INT") {
+        auto [arr, operations, expected] = readData<int>(testName, n);
+        testLifo(arr, operations, expected, testName, silentPass);
+    }
+    else if (testName == "MIN_INT") {
+        auto [arr, operations, expected] = readData<int>(testName, n);
+        testLifoMin(arr, operations, expected, testName, silentPass);
+    }
+    else {
+        auto [arr, operations, expected] = readData<string>(testName, n, readVectorStringGetline);
+        testLifoMinString(arr, operations, expected, testName, silentPass);
+    }
+
+    // testLifo({2,0,3,-1,-1,-1,-1}, {"push","push","push","max","pop","top","max"}, {3, 0, 2}, "MAX_INT");
+    // testLifoMin({-2,0,-3,-1,-1,-1,-1}, {"push","push","push","max","pop","top","max"}, {-3, 0, -2}, "MIN_INT");
+    // testLifoMinString({"ab","b","aa","","","",""}, {"push","push","push","max","pop","top","max"}, {"aa", "b", "ab"}, "MIN_STRING");
     return 0;
 }

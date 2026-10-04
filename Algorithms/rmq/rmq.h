@@ -7,8 +7,8 @@ Complexity (let N be length of the sequence):
 - Answering each query (online): time and memory O(1).
 */
 
-#ifndef RMQ_H
-#define RMQ_H
+#ifndef __RMQ_H__
+#define __RMQ_H__
 
 #include <vector>
 #include <functional>

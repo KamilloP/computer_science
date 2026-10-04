@@ -1,7 +1,7 @@
 // Useful for sliding window max (e.g. problems 239, 3578)
 
-#ifndef FIFO_MAX
-#define FIFO_MAX
+#ifndef __FIFO_MAX_H__
+#define __FIFO_MAX_H__
 
 #include<deque>
 #include<queue>

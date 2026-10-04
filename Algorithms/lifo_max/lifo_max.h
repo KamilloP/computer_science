@@ -1,7 +1,7 @@
 // Used in problem 155
 
-#ifndef LIFO_MAX
-#define LIFO_MAX
+#ifndef __LIFO_MAX_H__
+#define __LIFO_MAX_H__
 
 #include<stack>
 #include<functional>
