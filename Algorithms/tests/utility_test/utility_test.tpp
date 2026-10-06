@@ -1,32 +1,26 @@
-template<typename T>
-void printVector(const std::vector<T>& v) {
+template<typename T, int N>
+void printVector(const VectorT<T, N>& v) {
     std::cout << "[";
     for (int i=0; i+1<int(v.size()); i++) {
-        std::cout << v[i] << ", ";
-    }
-    if (v.size() > 0) {
-        std::cout << v[v.size()-1]; 
-    }
-    std::cout << "]\n";
-}
-
-template<typename T>
-void printVector2(const std::vector<std::vector<T>>& v) {
-    std::cout << "[";
-    for (int i=0; i+1<int(v.size()); i++) {
-        printVector(v[i]);
+        if constexpr (N==1)
+            std::cout << v[i];
+        else
+            printVector<T, N-1>(v[i]);
         std::cout << ", ";
     }
     if (v.size() > 0) {
-        printVector(v[v.size()-1]);
+        if constexpr (N==1)
+            std::cout << v[v.size()-1];
+        else
+            printVector<T,N-1>(v[v.size()-1]);
     }
     std::cout << "]\n";
 }
 
-template<typename T>
+template<typename T, int N>
 void test(
-    const std::vector<T>& result, 
-    const std::vector<T>& expected, 
+    const VectorT<T, N> result, 
+    const VectorT<T, N>& expected, 
     const std::string& testName, 
     bool silentPass
 ) {
@@ -37,37 +31,16 @@ void test(
     }
     else {
         std::cout << "Test " << testName << " failed:\nresult=";
-        printVector(result);
+        printVector<T, N>(result);
         std::cout << "expected=";
-        printVector(expected);
+        printVector<T, N>(expected);
         throw std::logic_error( "expected != result" );
     }
 }
 
-template<typename T>
-void test2(
-    const std::vector<std::vector<T>>& result, 
-    const std::vector<std::vector<T>>& expected, 
-    const std::string& testName, 
-    bool silentPass
-) {
-    if (expected == result) {
-        if (!silentPass) {
-            std::cout << "Test " << testName << " passed\n";
-        }
-    }
-    else {
-        std::cout << "Test " << testName << " failed:\nresult=";
-        printVector2(result);
-        std::cout << "expected=";
-        printVector2(expected);
-        throw std::logic_error( "expected != result" );
-    }
-}
-
-template<typename T>
-std::vector<T> readVector(std::istream& input) {
-    std::vector<T> result;
+template<typename T, int N>
+VectorT<T, N> readVector(std::istream& input) {
+    VectorT<T, N> result;
     int n;
     input >> n;
     if (n < 0) {
@@ -76,15 +49,19 @@ std::vector<T> readVector(std::istream& input) {
         );
     }
     for (int i=0; i<n; i++) {
-        T temp;
-        input >> temp;
+        VectorT<T, N-1> temp;
+        if constexpr (N == 1)
+            input >> temp;
+        else
+            temp = readVector<T,N-1>(input);
         result.push_back(temp);
     }
     return result;
 }
 
-std::vector<std::string>  readVectorStringGetline(std::istream& input) {
-    std::vector<std::string> result;
+template<int N>
+VectorT<std::string, N> readVectorStringGetline(std::istream& input) {
+    VectorT<std::string, N> result;
     int n;
     std::string nStr;
     std::getline(input, nStr);
@@ -96,41 +73,11 @@ std::vector<std::string>  readVectorStringGetline(std::istream& input) {
         );
     }
     for (int i=0; i<n; i++) {
-        std::string temp;
-        std::getline(input, temp);
-        result.push_back(temp);
-    }
-    return result;
-}
-
-template<typename T>
-std::vector<std::vector<T>> readVector2(std::istream& input) {
-    std::vector<std::vector<T>> result;
-    int n;
-    input >> n;
-    if (n < 0) {
-        throw std::invalid_argument(
-            "Number of elements should be non-negative (n = " + std::to_string(n) + ")"
-        );
-    }
-    for (int i=0; i<n; i++) {
-        std::vector<T> temp = readVector<T>(input);
-        result.push_back(temp);
-    }
-    return result;
-}
-
-std::vector<std::vector<std::string>> readVector2StringGetline(std::istream& input) {
-    std::vector<std::vector<std::string>> result;
-    int n;
-    input >> n;
-    if (n < 0) {
-        throw std::invalid_argument(
-            "Number of elements should be non-negative (n = " + std::to_string(n) + ")"
-        );
-    }
-    for (int i=0; i<n; i++) {
-        auto temp = readVectorStringGetline(input);
+        VectorT<std::string, N-1> temp;
+        if constexpr (N==1)
+            std::getline(input, temp);
+        else
+            readVectorStringGetline<N-1>(input);
         result.push_back(temp);
     }
     return result;

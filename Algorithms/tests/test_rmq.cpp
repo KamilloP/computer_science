@@ -8,8 +8,8 @@
 
 using namespace std;
 
-template<typename T, typename F = decltype(readVector<T>)>
-tuple<vector<T>, vector<pair<int,int>>> readDataInput(const string& testName, int n, F funcReadVector = readVector<T>) {
+template<typename T, typename F = decltype(readVector<T,1>)>
+tuple<vector<T>, vector<pair<int,int>>> readDataInput(const string& testName, int n, F funcReadVector = readVector<T,1>) {
     ifstream input_file("dataset/rmq/" + testName + "/" + to_string(n) + ".in");
     if (!input_file) {
         throw invalid_argument("No such file as `dataset/rmq/" + testName + "/" + to_string(n) + ".in`");
@@ -17,8 +17,8 @@ tuple<vector<T>, vector<pair<int,int>>> readDataInput(const string& testName, in
     auto arr = funcReadVector(input_file);
     vector<pair<int,int>> queries;
     {
-        auto first = readVector<int>(input_file);
-        auto second = readVector<int>(input_file);
+        auto first = readVector<int,1>(input_file);
+        auto second = readVector<int,1>(input_file);
         if (first.size() != second.size()) {
             throw invalid_argument("First size is different that second size!");
         }
@@ -30,19 +30,20 @@ tuple<vector<T>, vector<pair<int,int>>> readDataInput(const string& testName, in
     return tuple(arr, queries);
 }
 
-vector<int> readDataExpected(const string& testName, const string& taskName, int n) {
+template<int N>
+VectorT<int, N> readDataExpected(const string& testName, const string& taskName, int n) {
     ifstream expected_file("dataset/rmq/" + testName + "/" + taskName + "/" + to_string(n) + ".out");
     if (!expected_file)
         throw invalid_argument("No such file as `dataset/rmq/" + testName + "/" + taskName + "/" + to_string(n) + ".out`");
-    return readVector<int>(expected_file);
+    return readVector<int,N>(expected_file);
 }
 
-vector<vector<int>> readDataExpected2(const string& testName, const string& taskName, int n) {
-    ifstream expected_file("dataset/rmq/" + testName + "/" + taskName + "/" + to_string(n) + ".out");
-    if (!expected_file)
-        throw invalid_argument("No such file as `dataset/rmq/" + testName + "/" + taskName + "/" + to_string(n) + ".out`");
-    return readVector2<int>(expected_file);
-}
+// vector<vector<int>> readDataExpected2(const string& testName, const string& taskName, int n) {
+//     ifstream expected_file("dataset/rmq/" + testName + "/" + taskName + "/" + to_string(n) + ".out");
+//     if (!expected_file)
+//         throw invalid_argument("No such file as `dataset/rmq/" + testName + "/" + taskName + "/" + to_string(n) + ".out`");
+//     return readVector<int,2>(expected_file);
+// }
 
 template<typename T, typename Comp>
 vector<int> minViaRMQ(const vector<T>& arr, const RMQ<T, Comp>& rmq, const vector<pair<int, int>>& queries) {
@@ -79,117 +80,16 @@ void testRMQTemplate(
     bool silentPass
 ) {
     if (taskName != "RMQ") {
-        auto expected = readDataExpected(testName, taskName, n);
+        auto expected = readDataExpected<1>(testName, taskName, n);
         auto output = computeOutput(rmq, arr, queries, taskName);
-        test(output, expected, testName + ":" + taskName, silentPass);
+        test<int,1>(output, expected, testName + ":" + taskName, silentPass);
     }
     else {
-        auto expected = readDataExpected2(testName, taskName, n);
+        auto expected = readDataExpected<2>(testName, taskName, n);
         auto output = rmq.getRMQ();
-        test2(output, expected, testName + ":" + taskName, silentPass);
+        test<int,2>(output, expected, testName + ":" + taskName, silentPass);
     }
 }
-
-//
-
-// template<typename T, typename Comp>
-// tuple<vector<vector<int>>, vector<int>, vector<int>> getRMQAttributes(
-//     const RMQ<T, Comp>& rmq
-// ) {
-//     return {rmq.getRMQ(), rmq.getMSB(), rmq.getPowers2()};
-// }
-
-// template<typename T, typename Comp>
-// void testRMQTemplate(
-//     const vector<T>& arr, 
-//     const RMQ<T, Comp>& RMQ_, 
-//     const vector<pair<int, int>>& queries, 
-//     const vector<int>& expected,
-//     const string& testName,
-//     const string& taskName
-// ) {
-//     vector<int> result = minViaRMQ(arr, RMQ_, queries);
-//     auto [rmq, msb, powers2] = getRMQAttributes(RMQ_);
-//     test(msb, expectedMSB, testName+":MSB");
-//     test(powers2, expectedPowers2, testName+":Power2");
-//     test2(rmq, expectedRMQ, testName+":RMQ");
-//     test(result, expected, testName+":Queries");
-// }
-
-// template<typename T, typename Comp>
-// void testRMQTemplate2(
-//     const vector<T>& arr, 
-//     const RMQ<T, Comp>& RMQ_, 
-//     const vector<pair<int, int>>& queries, 
-//     const vector<int>& expected,
-//     const vector<int>& expectedMSB,
-//     const vector<int>& expectedPowers2,
-//     const vector<vector<int>>& expectedRMQ,
-//     const string& testName
-// ) {
-//     vector<int> result = minViaRMQ(arr, RMQ_, queries);
-//     auto [rmq, msb, powers2] = getRMQAttributes(RMQ_);
-//     test(msb, expectedMSB, testName+":MSB");
-//     test(powers2, expectedPowers2, testName+":Power2");
-//     test2(rmq, expectedRMQ, testName+":RMQ");
-//     test(result, expected, testName+":Queries");
-// }
-
-
-// void testRMQ(
-//     const vector<int>& arr, 
-//     const vector<pair<int, int>>& queries, 
-//     const vector<int>& expected,
-//     const vector<int>& expectedMSB,
-//     const vector<int>& expectedPowers2,
-//     const vector<vector<int>>& expectedRMQ,
-//     const string& testName
-// ) {
-//     int N=arr.size();
-//     if (N==0) {throw invalid_argument("arr empty!");}
-//     RMQ<int> rmq(arr);
-//     testRMQTemplate(arr, rmq, queries, expected, expectedMSB, expectedPowers2, expectedRMQ, testName);
-// }
-
-// template<typename T, typename Comp>
-// RMQ<T, Comp> testRMQMax(
-//     const vector<int>& arr, 
-//     const vector<pair<int, int>>& queries, 
-//     const vector<int>& expected,
-//     const vector<int>& expectedMSB,
-//     const vector<int>& expectedPowers2,
-//     const vector<vector<int>>& expectedRMQ,
-//     const string& testName,
-//     const string& taskName
-// ) {
-//     int N=arr.size();
-//     if (N==0) {throw invalid_argument("arr empty!");}
-//     struct MyComparator {
-//         bool operator()(const int a, const int b) const {
-//             return a > b;
-//         }
-//     };
-//     RMQ<int, MyComparator> rmq(arr);
-//     testRMQTemplate(arr, rmq, queries, expected, expectedMSB, expectedPowers2, expectedRMQ, testName);
-// }
-
-// void testRMQMaxString(
-//     const vector<string>& arr, 
-//     const vector<pair<int, int>>& queries, 
-//     const vector<int>& expected,
-//     const vector<int>& expectedMSB,
-//     const vector<int>& expectedPowers2,
-//     const vector<vector<int>>& expectedRMQ,
-//     const string& testName
-// ) {
-//     struct MyComparator {
-//         bool operator()(const string& a, const string& b) const {
-//             return a > b;
-//         }
-//     };
-//     RMQ<string, MyComparator> rmq(arr);
-//     testRMQTemplate(arr, rmq, queries, expected, expectedMSB, expectedPowers2, expectedRMQ, testName);
-// }
 
 int main (int argc, char* argv[]) {
     argparse::ArgumentParser program("algorithms_tests");
@@ -247,7 +147,7 @@ int main (int argc, char* argv[]) {
         testRMQTemplate(arr, rmq, queries, testName, taskName, n, silentPass);
     }
     else {
-        auto [arr, queries] = readDataInput<string>(testName, n, readVectorStringGetline);
+        auto [arr, queries] = readDataInput<string>(testName, n, readVectorStringGetline<1>);
 
         int N=arr.size();
         if (N==0) {throw invalid_argument("arr empty!");}

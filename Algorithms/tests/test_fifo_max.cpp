@@ -7,8 +7,8 @@
 
 using namespace std;
 
-template<typename T, typename F = decltype(readVector<T>)>
-tuple<vector<T>, int, vector<T>> readData(const string& testName, int n, F funcReadVector = readVector<T>) {
+template<typename T, typename F = decltype(readVector<T,1>)>
+tuple<VectorT<T,1>, int, VectorT<T,1>> readData(const string& testName, int n, F funcReadVector = readVector<T,1>) {
     ifstream input_file("dataset/fifo_max/" + testName + "/" + to_string(n) + ".in");
     ifstream expected_file("dataset/fifo_max/" + testName + "/" + to_string(n) + ".out");
 
@@ -49,7 +49,7 @@ vector<T> slidingWindow(const vector<T>& arr, int k, Comp comp = Comp{}) {
 
 void testSlidingWindow(const vector<int>& arr, int k, const vector<int>& expected, const string& testName, bool silentPass) {
     vector<int> result = slidingWindow(arr, k);
-    test(result, expected, testName, silentPass);
+    test<int,1>(result, expected, testName, silentPass);
 }
 
 void testSlidingWindowMin(const vector<int>& arr, int k, const vector<int>& expected, const string& testName, bool silentPass) {
@@ -59,7 +59,7 @@ void testSlidingWindowMin(const vector<int>& arr, int k, const vector<int>& expe
         }
     };
     vector<int> result = slidingWindow(arr, k, MyComparator{});
-    test(result, expected, testName, silentPass);
+    test<int,1>(result, expected, testName, silentPass);
 }
 
 void testSlidingWindowMinString(const vector<string>& arr, int k, const vector<string>& expected, const string& testName, bool silentPass) {
@@ -69,7 +69,7 @@ void testSlidingWindowMinString(const vector<string>& arr, int k, const vector<s
         }
     };
     vector<string> result = slidingWindow(arr, k, MyComparator{});
-    test(result, expected, testName, silentPass);
+    test<string,1>(result, expected, testName, silentPass);
 }
 
 int main (int argc, char* argv[]) {
@@ -88,9 +88,8 @@ int main (int argc, char* argv[]) {
         testSlidingWindowMin(arr, k, expected, "MIN_INT", silentPass);
     }
     else {
-        auto [arr, k, expected] = readData<string>(testName, n, readVectorStringGetline);
+        auto [arr, k, expected] = readData<string>(testName, n, readVectorStringGetline<1>);
         testSlidingWindowMinString(arr, k, expected, "MIN_STRING", silentPass); 
-        // Unfortunately currently we cannot read empty string, as `cin >>` omits whitespace characters.
     }
     // testSlidingWindow({1,3,-1,-3,5,3,6,7}, 3, {3,3,5,5,6,7}, "MAX_INT");
     // testSlidingWindowMin({1,3,-1,-3,5,3,6,7}, 3, {-1,-3,-3,-3,3,3}, "MIN_INT");

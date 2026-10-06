@@ -7,20 +7,25 @@ knowledge, with main focus on algorithms and c++ language.
 Under construction.
 
 ## Algorithms
-Implementation of some algorithms in c++ 17. Usually as general as possible. Solutions are self made, no AI - thus code documentation might be partial. Of course AI *was* used for learning.
+Implementation of some algorithms in c++ 17. Usually as general as possible. Solutions are self made, no AI - thus code documentation might be partial. Of course AI ***was*** used for learning.
 
-Algorithms and example problems:
-- Dynamic programming: 3578, 44
-- Fifo Max (Sliding Window): 3578, 239
-- Lifo Max: 155
-- Backtracking: 39, 40, 46, 47
-- DFS: 827 (connected components)
-- Greedy: 45, 53
-- Divide and conquer: 53
-- Fast exponentation: 50
-- Divide and conquer: 56
-- Self-balancing BST: 56
-- Lazy segment tree: 56 (not yet implemented)
+| Algorithm                | Implemented         | Where in `Algorithms` | Some leetcode problems |
+| ------------------------ | ------------------- | --------------------- | ---------------------- |
+| RMQ                      | Yes                 | `rmq/rmq.h`           | -                      |
+| LCA (linear)             | Yes                 | `graph/graph.h`       | -                      |
+| FifoMax (Sliding Window) | Yes                 | `fifo_max/fifo_max.h` | 239, 3578              |
+| LifoMax                  | Yes                 | `lifo_max/lifo_max.h` | 155                    |
+| Trie                     | Yes (only problems) | -                     | 30                     |
+| Backtracking             | Yes (only problems) | -                     | 39, 40, 46, 47         |
+| DFS connected components | Yes (only problems) | -                     | 827                    |
+| Greedy                   | Yes (only problems) | -                     | 45, 53                 |
+| Divide and conquer       | Yes (only problems) | -                     | 53, 56                 |
+| Fast exponentation       | Yes (only problems) | -                     | 50                     |
+| KMP, LPS                 | Yes (only problems) | -                     | 30                     |
+| Dynamic programming      | Yes (only problems) | -                     | 3578, 44               |
+| Red-black tree           | Not yet (but used)  | -                     | 56                     |
+| AVL tree                 | Not yet             | -                     | 56                     |
+| Lazy segment tree        | Not yet             | -                     | 56                     |
 
 <!-- In c++ 20 we could use `require` and `concept` for easier definition of templates. -->
 
@@ -30,9 +35,14 @@ Algorithms and example problems:
 [leetcode]: https://leetcode.com/problemset/
 
 ## Current TODO
-lca, lazy segment tree (could be used in 56), red-black tree, AVL, topological sort, dijkstra, 2-SAT solver, Find&Union, suffix tree, lcp, copy implementation of kmp, Trie, LPS from solutions and generalize.
+Algorithms: lazy segment tree (could be used in 56), red-black tree, AVL, topological sort, dijkstra, 2-SAT solver, Find&Union, suffix tree, lcp, copy implementation of kmp, Trie, LPS from solutions and generalize.
 
-Check true implementation of set (which is stated to be red-black tree on cppreference).
+Check true implementation of set (which is stated to be red-black tree on cppreference), maybe step by step tutorial.
+
+More graph tests.
+
+<!-- maybe_unused, unique_ptr, -->
+<!-- c++20: <=>, required, concept. -->
 
 ## Tests remarks
 To compile majority of the tests  in folder `Algorithms/tests`, use commented command in the test. 
@@ -42,16 +52,16 @@ g++ -std=c++17 -Wall -Wextra -pedantic test_fifo_max.cpp -o bin/test_fifo_max
 ```
 These executables will be saved in `bin` folder.
 
-Currently exception is `test_rmq.cpp`. It uses module [argparse], thus I have decided to use cmake (check `Algorithms/tests/CMakeLists.txt`). Compilation:
+Currently exceptions are `test_rmq.cpp` and `test_lca.cpp`. They use module [argparse], thus I have decided to use cmake (check `Algorithms/tests/CMakeLists.txt`). Compilation:
 ```
 cmake -S . -B build
 cmake --build build
 ```
-Executable for this test is saved in `build` folder.
+Executables for these tests are saved in `build` folder.
 
 Both folders `bin` and `build` are hidden (check `.gitignore`).
 
-Tests use data in folder `Algorithms/tests/dataset`. Example tests are provided.
+Tests use data from folder `Algorithms/tests/dataset`. Example tests are provided.
 
 [argparse]: (https://github.com/p-ranav/argparse/tree/master#requiring-optional-arguments)
 
@@ -65,9 +75,12 @@ Functions/structures and example problems/algorithms (problem mentioned by a lee
 - tie: 53
 - operator overloading: 54
 - template: 54, each algorithm
+- nested template: `Algorithms/tests/utility_test/utility_test.h::VectorT`
+- constexpr: `Algorithms/tests/utility_test/utility_test.h::readVector`
 - using: `Algorithms/graph/graph.h::Graph`
 - const referenced structure binding: `Algorithms/graph/graph.tpp::isProperTree` 
 - all_of: `Algorithms/graph/graph.tpp::isProperTree`
+- optional: `Algorithms/graph/graph.tpp::LCA::rmq`
 
 Useful classes:
 - Point in geometry: 54

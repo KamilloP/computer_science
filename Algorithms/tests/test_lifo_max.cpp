@@ -7,8 +7,8 @@
 
 using namespace std;
 
-template<typename T, typename F = decltype(readVector<T>)>
-tuple<vector<T>, vector<string>, vector<T>> readData(const string& testName, int n, F funcReadVector = readVector<T>) {
+template<typename T, typename F = decltype(readVector<T,1>)>
+tuple<VectorT<T,1>, VectorT<string,1>, VectorT<T,1>> readData(const string& testName, int n, F funcReadVector = readVector<T,1>) {
     ifstream input_file("dataset/lifo_max/" + testName + "/" + to_string(n) + ".in");
     ifstream expected_file("dataset/lifo_max/" + testName + "/" + to_string(n) + ".out");
 
@@ -19,7 +19,7 @@ tuple<vector<T>, vector<string>, vector<T>> readData(const string& testName, int
         throw invalid_argument("No such file as `dataset/lifo_max/" + testName + "/" + to_string(n) + ".out`");
     }
     auto arr = funcReadVector(input_file);
-    auto operations = readVector<string>(input_file);
+    auto operations = readVector<string,1>(input_file);
     auto expected = funcReadVector(expected_file);
     return tuple(arr, operations, expected);
 }
@@ -46,7 +46,7 @@ vector<T> operationsSequence(const vector<T>& elements, const vector<string> ope
 
 void testLifo(const vector<int>& elements, const vector<string> operations, const vector<int>& expected, const string& testName, bool silentPass) {
     vector<int> result = operationsSequence(elements, operations);
-    test(result, expected, testName, silentPass);
+    test<int,1>(result, expected, testName, silentPass);
 }
 
 void testLifoMin(const vector<int>& elements, const vector<string> operations, const vector<int>& expected, const string& testName, bool silentPass) {
@@ -56,7 +56,7 @@ void testLifoMin(const vector<int>& elements, const vector<string> operations, c
         }
     };
     vector<int> result = operationsSequence(elements, operations, MyComparator{});
-    test(result, expected, testName, silentPass);
+    test<int,1>(result, expected, testName, silentPass);
 }
 
 void testLifoMinString(const vector<string>& elements, const vector<string> operations, const vector<string>& expected, const string& testName, bool silentPass) {
@@ -66,7 +66,7 @@ void testLifoMinString(const vector<string>& elements, const vector<string> oper
         }
     };
     vector<string> result = operationsSequence(elements, operations, MyComparator{});;
-    test(result, expected, testName, silentPass);
+    test<string,1>(result, expected, testName, silentPass);
 }
 
 int main (int argc, char* argv[]) {
@@ -85,7 +85,7 @@ int main (int argc, char* argv[]) {
         testLifoMin(arr, operations, expected, testName, silentPass);
     }
     else {
-        auto [arr, operations, expected] = readData<string>(testName, n, readVectorStringGetline);
+        auto [arr, operations, expected] = readData<string>(testName, n, readVectorStringGetline<1>);
         testLifoMinString(arr, operations, expected, testName, silentPass);
     }
 

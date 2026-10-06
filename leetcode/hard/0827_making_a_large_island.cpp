@@ -1,3 +1,5 @@
+// Tags: connected components
+
 class Solution {
 private:
     inline int vertex(int row, int column, int N) {return (row*N)+column;}
