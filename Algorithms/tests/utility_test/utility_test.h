@@ -8,7 +8,7 @@
 #include<stdexcept>
 #include<utility>
 #include<algorithm>
-#include "../../graph/graph.h" // alias for `Graph` and function `isProperGraph`
+#include "../../graph/graph_definition.h" // alias for `Graph` and function `isProperGraph`
 
 template<typename T, int N>
 struct VectorType {
@@ -42,11 +42,22 @@ void test(
     bool silentPass
 );
 
+template<typename T>
+WeightedGraph<T> readWeightedUndirectedGraph(bool tree=false, std::istream& input = std::cin);
+
+template<typename T>
+WeightedGraph<T> readWeightedDirectedGraph(std::istream& input = std::cin);
+
+template<typename T>
+WeightedGraph<T> readWeightedTree(std::istream& input = std::cin);
+
 Graph readUndirectedGraph(bool tree=false, std::istream& input = std::cin);
 
 Graph readDirectedGraph(std::istream& input = std::cin);
 
 Graph readTree(std::istream& input = std::cin);
+
+void printGraph(const Graph& graph);
 
 std::tuple<std::string, int, bool> analyzeMainArguments(int argc, char* argv[]);
 

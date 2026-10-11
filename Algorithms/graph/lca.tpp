@@ -37,33 +37,25 @@ LCA::LCA(int root, const Graph& tree) {
     // Assumes N >= 2, to satisfy this it is enough if V >= 2 (we want bucketSize >= 1).
     const auto& [V_, E, edges] = tree;
     V = V_;
-    // std::cout << "V=" << V << "\n";
-    inorder = findIndorder(root, tree);
-    // std::cout << "Inorder done!\n"; 
+    walkingPath = findWalkingPath(root, tree);
     height = findHeight(root, tree);
-    // std::cout << "Height done!\n"; 
-    int N=inorder.size();
-    // std::cout << "N=" << N << "\n";
+    int N=walkingPath.size();
     firstOccurence = std::vector<int>(V, INT_MAX);
     for (int i=0; i < N; i++) {
-        firstOccurence[inorder[i]] = std::min(i, firstOccurence[inorder[i]]);
+        firstOccurence[walkingPath[i]] = std::min(i, firstOccurence[walkingPath[i]]);
     }
-    // std::cout << "FirstOccurence done!\n"; 
     bucketSize = 0;
     int pow2=1;
     while (pow2*pow2 < N) {
         pow2 *= 2;
         bucketSize++;
     }
-    // std::cout << "Bucket size =" << bucketSize << "!\n";
     std::vector<int> relativeHeights {0};
     computeBruteForRepresentant(bucketSize-1, relativeHeights);
-    // std::cout << "ComputeBruteForRepresentant done!\n";
     beginOfBucket.push_back(0);
     while (beginOfBucket[beginOfBucket.size()-1] + bucketSize < N) {
         beginOfBucket.push_back(beginOfBucket[beginOfBucket.size()-1] + bucketSize);
     }
-    // std::cout << "BeginOfBucket done!\n"; 
     for (int i=0; i < int(beginOfBucket.size()); i++) {
         bucketNr.push_back(i);
         unsigned int representation = 0;
@@ -72,7 +64,7 @@ LCA::LCA(int root, const Graph& tree) {
         while (j < std::min(b+bucketSize, N)) {
             bucketNr.push_back(i);
             representation *= 2;
-            representation += height[inorder[j]] > height[inorder[j-1]] ? 1 : 0;
+            representation += height[walkingPath[j]] > height[walkingPath[j-1]] ? 1 : 0;
             j++;
         }
         while (j < b+bucketSize) {
@@ -83,20 +75,16 @@ LCA::LCA(int root, const Graph& tree) {
         }
         representant.push_back(representation);
     }
-    // std::cout << "BucketNr and representant done!\n"; 
     LCAComparator comp(*this);
-    // std::cout << "LCAComparator done!\n";
     arange.reserve(beginOfBucket.size());
     for (int i=0; i<int(beginOfBucket.size()); i++) {arange.push_back(i);}
-    // std::cout << "Arange done!\n";
     rmq.emplace(arange, comp);
-    // std::cout << "RMQ done!\n";
 }
 
 int LCA::computeHeight(int bucket) const {
     int pos = beginOfBucket[bucket] + 
         bruteRMQForRepresentant[representant[bucket]][0][bucketSize-1];
-    return height[inorder[pos]];
+    return height[walkingPath[pos]];
 }
 
 int LCA::suffixMin(int pos) const {
@@ -104,7 +92,7 @@ int LCA::suffixMin(int pos) const {
     int r = pos - beginOfBucket[bucket];
     int posSuffix = beginOfBucket[bucket] +
         bruteRMQForRepresentant[representant[bucket]][r][bucketSize-r-1];
-    return inorder[posSuffix];
+    return walkingPath[posSuffix];
 }
 
 int LCA::prefixMin(int pos) const {
@@ -112,14 +100,14 @@ int LCA::prefixMin(int pos) const {
     int r = pos - beginOfBucket[bucket];
     int posPrefix = beginOfBucket[bucket] +
         bruteRMQForRepresentant[representant[bucket]][0][r];
-    return inorder[posPrefix];
+    return walkingPath[posPrefix];
 }
 
 int LCA::middleMin(int bucketU, int bucketV) const {
     int minBucket = rmq->argmin(bucketU+1, bucketV-1, arange);
     int pos = beginOfBucket[minBucket] + 
         bruteRMQForRepresentant[representant[minBucket]][0][bucketSize-1];
-    return inorder[pos];
+    return walkingPath[pos];
 }
 
 int LCA::lca(int u, int v) const {
@@ -131,7 +119,7 @@ int LCA::lca(int u, int v) const {
         int rV = posV - posU;
         int pos = beginOfBucket[bucketU] + 
             bruteRMQForRepresentant[representant[bucketU]][rU][rV];
-        return inorder[pos];
+        return walkingPath[pos];
     }
     if (bucketV == bucketU+1) {
         int suffix = suffixMin(posU), prefix = prefixMin(posV);

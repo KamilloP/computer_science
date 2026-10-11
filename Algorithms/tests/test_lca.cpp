@@ -1,10 +1,9 @@
 #include <bits/stdc++.h>
 // #include <stdexcept> // Not included because in bits/stdc++.h
 #include "utility_test/utility_test.h"
+#include "../graph/graph_definition.h"
 #include "../graph/graph.h"
 #include <argparse/argparse.hpp>
-
-// g++ -std=c++17 -Wall -Wextra -pedantic test_rmq.cpp -o bin/test_rmq
 
 using namespace std;
 
@@ -41,13 +40,6 @@ VectorT<int, N> readDataExpected(const string& taskName, int n) {
     return readVector<int,N>(expected_file);
 }
 
-// vector<vector<int>> readDataExpected2(const string& testName, const string& taskName, int n) {
-//     ifstream expected_file("dataset/rmq/" + testName + "/" + taskName + "/" + to_string(n) + ".out");
-//     if (!expected_file)
-//         throw invalid_argument("No such file as `dataset/rmq/" + testName + "/" + taskName + "/" + to_string(n) + ".out`");
-//     return readVector2<int>(expected_file);
-// }
-
 vector<int> findLCA(const LCA& lca, const vector<pair<int, int>>& queries) {
     vector<int> result;
     for (auto [u,v] : queries) {
@@ -61,8 +53,8 @@ vector<int> computeOutput(
     const vector<pair<int,int>>& queries, 
     const string& taskName
 ) {
-    if (taskName == "Inorder")
-        return lca.getInorder();
+    if (taskName == "WalkingPath")
+        return lca.getWalkingPath();
     if (taskName == "Height")
         return lca.getHeight();
     // Queries
@@ -85,7 +77,7 @@ void testLCATemplate(
 int main (int argc, char* argv[]) {
     argparse::ArgumentParser program("algorithms_tests");
     program.add_argument("taskName")
-        .help("Name of the task (Inorder, Height or Queries");
+        .help("Name of the task (WalkingPath, Height or Queries");
     program.add_argument("n")
         .help("Test identifier (number)")
         .scan<'i', int>();
@@ -105,22 +97,14 @@ int main (int argc, char* argv[]) {
     int n = program.get<int>("n");
     bool silentPass = !program.get<bool>("loudPass");
 
-    vector<string> possibleTasks {"Inorder", "Height", "Queries"};
+    vector<string> possibleTasks {"WalkingPath", "Height", "Queries"};
     if (find(possibleTasks.begin(), possibleTasks.end(), taskName) == possibleTasks.end()) 
         throw invalid_argument("Task name (" + taskName + ") is not supported");
     
     auto [root, tree, queries] = readDataInput(n);
     const auto& [V, E, edges] = tree;
-    // Begin debug
-    // cout << "(" << V << ", " << E << " ";
-    // printVector2(edges);
-    // cout << ")\n"; 
-    // End debug
     if (V < 2) {throw invalid_argument("Number of vertices less than 2!");}
-    // cout << "Read tree done!\n";
     LCA lca(root, tree);
-    // cout << "lca constructed!\n";
     testLCATemplate(lca, queries, taskName, n, silentPass);
-    // cout << "tests passed!\n";
     return 0;
 }

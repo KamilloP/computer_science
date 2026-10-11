@@ -19,3 +19,7 @@ target_link_libraries(test_rmq PRIVATE argparse)
 add_executable(test_lca test_lca.cpp)
 
 target_link_libraries(test_lca PRIVATE argparse)
+
+add_executable(test_dijkstra test_dijkstra.cpp)
+
+target_link_libraries(test_dijkstra PRIVATE argparse)

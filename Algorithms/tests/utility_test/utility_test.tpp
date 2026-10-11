@@ -83,8 +83,8 @@ VectorT<std::string, N> readVectorStringGetline(std::istream& input) {
     return result;
 }
 
-template<typename F>
-Graph readGraph(F funcAddEdge, bool tree=false, std::istream& input = std::cin) {
+template<typename EdgeEndpoint, typename F>
+GeneralizedGraph<EdgeEndpoint> readGeneralizedGraph(F funcAddEdge, bool tree=false, std::istream& input = std::cin) {
     int V, E;
     input >> V >> E;
     if (V < 0) {
@@ -103,8 +103,8 @@ Graph readGraph(F funcAddEdge, bool tree=false, std::istream& input = std::cin) 
             ", V = " + std::to_string(V) + ")"
         );
     }
-    std::vector<int> neighbours;
-    std::vector<std::vector<int>> edges(V , neighbours);
+    std::vector<EdgeEndpoint> neighbours;
+    std::vector<std::vector<EdgeEndpoint>> edges(V , neighbours);
     for (int i=0; i<E; i++) {
         int a, b;
         input >> a >> b;
@@ -118,24 +118,53 @@ Graph readGraph(F funcAddEdge, bool tree=false, std::istream& input = std::cin) 
                 "Vertex does not exist (b = " + std::to_string(b) + ", V = " + std::to_string(V) + ")"
             );
         }
-        funcAddEdge(a, b, edges);
+        funcAddEdge(a, b, edges, input);
     }
     return std::tuple(V, E, edges);
 }
 
+template<typename T>
+WeightedGraph<T> readWeightedUndirectedGraph(bool tree, std::istream& input) {
+    auto func = [](int a, int b, Edges<std::pair<int,T>>& edges, std::istream& input) {
+        T w;
+        input >> w;
+        edges[a].push_back(std::make_pair(b, w));
+        edges[b].push_back(std::make_pair(a, w));
+    };
+    return readGeneralizedGraph<std::pair<int,T>>(func, tree, input);
+}
+
+template<typename T>
+WeightedGraph<T> readWeightedDirectedGraph(std::istream& input) {
+     auto func = [](int a, int b, Edges<std::pair<int,int>>& edges, std::istream& input) {
+        T w;
+        input >> w;
+        edges[a].push_back(std::make_pair(b,w));
+    };
+    return readWeightedGraph(func, false, input);
+}
+
+template<typename T>
+WeightedGraph<T> readWeightedTree(std::istream& input) {
+    WeightedGraph<T> wGraph = readWeightedUndirectedGraph<T>(true, input);
+    if (!isProperTree(weightedGraphToSimpleGraph(wGraph)))
+        throw std::logic_error("Graph is not a proper tree!");
+    return wGraph;
+}
+
 Graph readUndirectedGraph(bool tree, std::istream& input) {
-    auto func = [](int a, int b, std::vector<std::vector<int>>& edges) {
+    auto func = [](int a, int b, Edges<int>& edges, std::istream& input) {
         edges[a].push_back(b);
         edges[b].push_back(a);
     };
-    return readGraph(func, tree, input);
+    return readGeneralizedGraph<int>(func, tree, input);
 }
 
 Graph readDirectedGraph(std::istream& input) {
-    auto func = [](int a, int b, std::vector<std::vector<int>>& edges) {
+    auto func = [](int a, int b, Edges<int>& edges, std::istream& input) {
         edges[a].push_back(b);
     };
-    return readGraph(func, false, input);
+    return readGeneralizedGraph<int>(func, false, input);
 }
 
 Graph readTree(std::istream& input) {
@@ -175,4 +204,29 @@ std::tuple<std::string, int, bool> analyzeMainArguments(int argc, char* argv[]) 
         throw e;
     }
     return std::tuple(testName, n, silentPass);
+}
+
+void printGraph(const Graph& graph) {
+    auto& [V,E,edges] = graph;
+    std::cout << "(" << V << ", " << E <<  ", [";
+    for (int v=0; v+1<V; v++) {
+        std::cout << v << ": [";
+        for (int u=0; u+1 < int(edges[v].size()); u++) {
+            std::cout << edges[v][u] << ", ";
+        }
+        if (edges[v].size() > 0)
+            std::cout << edges[v][edges[v].size()-1];
+        std::cout << "],\n";
+    }
+    if (edges.size() > 0) {
+        int v = edges.size()-1;
+        std::cout << v << ": [";
+        for (int u=0; u+1 < int(edges[v].size()); u++) {
+            std::cout << edges[v][u] << ", ";
+        }
+        if (edges[v].size() > 0)
+            std::cout << edges[v][edges[v].size()-1];
+        std::cout << "]";
+    }
+    std::cout << "]\n";
 }

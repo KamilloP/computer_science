@@ -12,9 +12,12 @@ Implementation of some algorithms in c++ 17. Usually as general as possible. Sol
 | Algorithm                | Implemented         | Where in `Algorithms` | Some leetcode problems |
 | ------------------------ | ------------------- | --------------------- | ---------------------- |
 | RMQ                      | Yes                 | `rmq/rmq.h`           | -                      |
-| LCA (linear)             | Yes                 | `graph/graph.h`       | -                      |
+| LCA (time O(V+Q))        | Yes                 | `graph/graph.h`       | -                      |
 | FifoMax (Sliding Window) | Yes                 | `fifo_max/fifo_max.h` | 239, 3578              |
 | LifoMax                  | Yes                 | `lifo_max/lifo_max.h` | 155                    |
+| Fibonacci Heap           | Yes                 | `fib_heap/fib_heap.h` | -                      |
+| Dijkstra (E+VlogV)       | Yes                 | `graph/graph.h`       | -                      |
+| Prim (E+VlogV)           | Yes (not tested)    | `graph/graph.h`       | -                      |
 | Trie                     | Yes (only problems) | -                     | 30                     |
 | Backtracking             | Yes (only problems) | -                     | 39, 40, 46, 47         |
 | DFS connected components | Yes (only problems) | -                     | 827                    |
@@ -35,24 +38,28 @@ Implementation of some algorithms in c++ 17. Usually as general as possible. Sol
 [leetcode]: https://leetcode.com/problemset/
 
 ## Current TODO
-Algorithms: lazy segment tree (could be used in 56), red-black tree, AVL, topological sort, dijkstra, 2-SAT solver, Find&Union, suffix tree, lcp, copy implementation of kmp, Trie, LPS from solutions and generalize.
+Algorithms: lazy segment tree (could be used in 56), red-black tree, AVL, topological sort, 2-SAT solver, Find&Union, suffix tree, lcp, copy implementation of kmp, Trie, LPS from leetcode solutions and generalize.
+
+Also splay tree, Kruskal.
+
+Tests for Prim are necessary! More graph tests.
+
+<!-- https://en.wikipedia.org/wiki/Contraction_hierarchies -->
 
 Check true implementation of set (which is stated to be red-black tree on cppreference), maybe step by step tutorial.
-
-More graph tests.
 
 <!-- maybe_unused, unique_ptr, -->
 <!-- c++20: <=>, required, concept. -->
 
 ## Tests remarks
-To compile majority of the tests  in folder `Algorithms/tests`, use commented command in the test. 
+To compile some of the tests  in folder `Algorithms/tests`, use commented command in the test. 
 For example for `test_fifo_max.cpp`:
 ```
 g++ -std=c++17 -Wall -Wextra -pedantic test_fifo_max.cpp -o bin/test_fifo_max
 ```
 These executables will be saved in `bin` folder.
 
-Currently exceptions are `test_rmq.cpp` and `test_lca.cpp`. They use module [argparse], thus I have decided to use cmake (check `Algorithms/tests/CMakeLists.txt`). Compilation:
+Currently exceptions are `test_rmq.cpp`, `test_lca.cpp` and `test_dijkstra.cpp`. They use module [argparse], thus I have decided to use cmake (check `Algorithms/tests/CMakeLists.txt`). Compilation:
 ```
 cmake -S . -B build
 cmake --build build
@@ -62,6 +69,10 @@ Executables for these tests are saved in `build` folder.
 Both folders `bin` and `build` are hidden (check `.gitignore`).
 
 Tests use data from folder `Algorithms/tests/dataset`. Example tests are provided.
+
+Test `test_dijkstra.cpp` has 2 phases:
+- checks if expected answer and algorithm answer are proper paths. Anything that fails in this phase is wrong.
+- checks if expected distances and algorithm output distances are equal. However, if test is bad (expected distances are not shortest), but algorithm is correct, then test will fail.
 
 [argparse]: (https://github.com/p-ranav/argparse/tree/master#requiring-optional-arguments)
 

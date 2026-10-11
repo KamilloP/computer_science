@@ -11,6 +11,7 @@
 
 template<typename T, typename Comp = std::less<T>>
 class FifoMax {
+private:
     Comp comp;
     std::deque<std::pair<T,int>> maximum;
     std::queue<T> elements;
